@@ -31,7 +31,7 @@ const cardModel = new Schema<ICard>(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
 export default model<ICard>("card", cardModel);

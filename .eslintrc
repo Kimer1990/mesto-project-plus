@@ -32,6 +32,8 @@
       {
         "allow": ["_id"]
       }
-    ]
+    ],
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "implicit-arrow-linebreak": ["error", "beside"]
   }
 }

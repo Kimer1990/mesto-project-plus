@@ -22,7 +22,7 @@ const userModel = new Schema<IUser>(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
 export default model<IUser>("user", userModel);
