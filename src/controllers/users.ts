@@ -21,11 +21,11 @@ export const getUserById = (
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет пользователя с таким id");
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const createUser = (
@@ -42,11 +42,11 @@ export const createUser = (
     .then((newUser) => res.status(201).send(newUser))
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
-        throw new BadRequestError("Были предоставлены неверные данные");
+        next(new BadRequestError("Были предоставлены неверные данные"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const updateProfile = (
@@ -70,14 +70,13 @@ export const updateProfile = (
     .then((updateUser) => res.status(200).send(updateUser))
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
-        throw new BadRequestError("Были предоставлены неверные данные");
+        next(new BadRequestError("Были предоставлены неверные данные"));
+      } else if (err instanceof Error && err.name === "CastError") {
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        next(err);
       }
-      if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет пользователя с таким id");
-      }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const updateProfileAvatar = (
@@ -98,12 +97,11 @@ export const updateProfileAvatar = (
     .then((updateUser) => res.status(200).send(updateUser))
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
-        throw new BadRequestError("Были предоставлены неверные данные");
+        next(new BadRequestError("Были предоставлены неверные данные"));
+      } else if (err instanceof Error && err.name === "CastError") {
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        next(err);
       }
-      if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет пользователя с таким id");
-      }
-      throw err;
-    })
-    .catch(next);
+    });
 };

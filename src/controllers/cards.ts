@@ -27,11 +27,11 @@ export const createCard = (
     .then((newCard) => res.status(201).send(newCard))
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
-        throw new BadRequestError("Были предоставлены неверные данные");
+        next(new BadRequestError("Были предоставлены неверные данные"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const deleteCardById = (
@@ -46,11 +46,11 @@ export const deleteCardById = (
     }))
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет карточки с таким id");
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const likeCard = (
@@ -68,11 +68,11 @@ export const likeCard = (
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет карточки с таким id");
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
 
 export const dislikeCard = (
@@ -90,9 +90,9 @@ export const dislikeCard = (
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        throw new NotFoundError("Нет карточки с таким id");
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else {
+        next(err);
       }
-      throw err;
-    })
-    .catch(next);
+    });
 };
