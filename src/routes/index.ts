@@ -5,4 +5,5 @@ import cardsRouter from "./cards";
 const router = Router();
 router.use("/users", usersRouter);
 router.use("/cards", cardsRouter);
+
 export default router;

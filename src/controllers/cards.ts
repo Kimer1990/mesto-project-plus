@@ -1,7 +1,7 @@
 import { ObjectId } from "mongoose";
 import { NextFunction, Request, Response } from "express";
-import Card from "../models/cards";
-import { BadRequestError, NotFoundError } from "../errors";
+import { Card } from "../models";
+import { BadRequestError, NotFoundError, ForbiddenError } from "../errors";
 import { ICustomRequest } from "../types";
 
 export const getCards = (
@@ -41,9 +41,15 @@ export const deleteCardById = (
 ): Promise<void | Response> => {
   const { cardId } = req.params;
   return Card.findByIdAndDelete(cardId)
-    .then(() => res.status(200).send({
-      message: "Карточка удалена",
-    }))
+    .then((card) => {
+      if (card!.owner.toString() !== req.user!._id) {
+        next(new ForbiddenError("Чужие курточки нельзя удалить"));
+      } else {
+        res.status(200).send({
+          message: "Карточка удалена",
+        });
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
         next(new NotFoundError("Нет карточки с таким id"));
