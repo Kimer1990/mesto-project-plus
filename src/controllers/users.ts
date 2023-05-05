@@ -1,7 +1,12 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../models";
-import { BadRequestError, NotFoundError } from "../errors";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+  ConflictError,
+} from "../errors";
 import { ICustomRequest } from "../types";
 import { generateToken } from "../utils/token";
 
@@ -71,7 +76,7 @@ export const createUser = (
       if (err instanceof Error && err.name === "ValidationError") {
         next(new BadRequestError("Были предоставлены неверные данные"));
       } else if (err.code === 11000) {
-        next(new BadRequestError("Пользователь с таким email уже существует"));
+        next(new ConflictError("Пользователь с таким email уже существует"));
       } else {
         next(err);
       }
@@ -153,7 +158,7 @@ export const login = (
     })
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
-        next(new BadRequestError("Были предоставлены неверные данные"));
+        next(new UnauthorizedError("Неверный логин или пароль"));
       } else {
         next(err);
       }
