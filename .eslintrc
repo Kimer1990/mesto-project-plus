@@ -33,6 +33,7 @@
         "allow": ["_id"]
       }
     ],
-    "quotes": ["error", "double", { "avoidEscape": true }]
+    "quotes": ["error", "double", { "avoidEscape": true }],
+    "no-unused-vars": "off"
   }
 }

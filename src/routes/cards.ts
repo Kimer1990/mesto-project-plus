@@ -5,14 +5,15 @@ import {
   deleteCardById,
   likeCard,
   dislikeCard,
-} from "../controllers/cards";
+} from "../controllers";
+import { cardIdValidation, createCardValidation } from "../validation";
 
 const cardsRouter = Router();
 
 cardsRouter.get("/", getCards);
-cardsRouter.post("/", createCard);
-cardsRouter.delete("/:cardId", deleteCardById);
-cardsRouter.put("/:cardId/likes", likeCard);
-cardsRouter.delete("/:cardId/likes", dislikeCard);
+cardsRouter.post("/", createCardValidation, createCard);
+cardsRouter.delete("/:cardId", cardIdValidation, deleteCardById);
+cardsRouter.put("/:cardId/likes", cardIdValidation, likeCard);
+cardsRouter.delete("/:cardId/likes", cardIdValidation, dislikeCard);
 
 export default cardsRouter;

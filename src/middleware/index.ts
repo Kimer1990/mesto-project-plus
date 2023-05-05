@@ -1,4 +1,7 @@
-import addTestOwner from "./add-test-owner";
+import auth from "./auth";
 import catchErrors from "./catch-errors";
+import { requestLogger, errorLogger } from "./logger";
 
-export { addTestOwner, catchErrors };
+export {
+  auth, catchErrors, requestLogger, errorLogger,
+};

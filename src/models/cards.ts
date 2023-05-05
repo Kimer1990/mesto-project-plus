@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import validator from "validator";
 import { ICard } from "../types";
 
 const cardModel = new Schema<ICard>(
@@ -8,10 +9,18 @@ const cardModel = new Schema<ICard>(
       required: true,
       minlength: 2,
       maxlength: 30,
+      validate: {
+        validator: (v: string) => v.length > 2 && v.length < 30,
+        message: "Название не должено быть короче 2 символов и длиннее 30.",
+      },
     },
     link: {
       type: String,
       required: true,
+      validate: {
+        validator: (v: string) => validator.isURL(v),
+        message: "Некорректная ссылка.",
+      },
     },
     owner: {
       type: Schema.Types.ObjectId,
