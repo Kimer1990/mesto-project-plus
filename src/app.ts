@@ -9,6 +9,7 @@ import routes from "./routes";
 import { createUser, login } from "./controllers";
 import { errorLogger, requestLogger } from "./middleware/logger";
 import { createUserValidation, loginValidation } from "./validation";
+import { NotFoundError } from "./errors";
 
 config({ path: join(__dirname, "..", ".env") });
 
@@ -23,6 +24,9 @@ app.post("/signup", createUserValidation, createUser);
 
 app.use(auth);
 app.use(routes);
+app.use((req, res, next) => {
+  next(new NotFoundError("такого маршрута не существует"));
+});
 
 app.use(errorLogger);
 app.use(errors());

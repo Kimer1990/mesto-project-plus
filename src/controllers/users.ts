@@ -1,12 +1,7 @@
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../models";
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-  ConflictError,
-} from "../errors";
+import { BadRequestError, NotFoundError, ConflictError } from "../errors";
 import { ICustomRequest } from "../types";
 import { generateToken } from "../utils/token";
 
@@ -26,13 +21,15 @@ export const getUser = (
   const id = req.user!._id as string;
 
   return User.findById(id)
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err instanceof Error && err.name === "CastError") {
+    .then((user) => {
+      if (!user) {
         next(new NotFoundError("Нет пользователя с таким id"));
       } else {
-        next(err);
+        res.status(200).send(user);
       }
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -44,10 +41,16 @@ export const getUserById = (
   const { userId } = req.params;
 
   return User.findById(userId)
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        res.status(200).send(user);
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет пользователя с таким id"));
+        next(new BadRequestError("Передан невалидный id"));
       } else {
         next(err);
       }
@@ -71,7 +74,10 @@ export const createUser = (
       avatar,
       email,
       password: hashPassword,
-    }).then((newUser) => res.status(201).send(newUser)))
+    }).then((createdUser) => {
+      const { password: _, ...newUser } = createdUser.toObject();
+      res.status(201).send(newUser);
+    }))
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
         next(new BadRequestError("Были предоставлены неверные данные"));
@@ -102,12 +108,16 @@ export const updateProfile = (
       runValidators: true,
     },
   )
-    .then((updateUser) => res.status(200).send(updateUser))
+    .then((updateUser) => {
+      if (!updateUser) {
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        res.status(200).send(updateUser);
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
         next(new BadRequestError("Были предоставлены неверные данные"));
-      } else if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет пользователя с таким id"));
       } else {
         next(err);
       }
@@ -130,12 +140,16 @@ export const updateProfileAvatar = (
       runValidators: true,
     },
   )
-    .then((updateUser) => res.status(200).send(updateUser))
+    .then((updateUser) => {
+      if (!updateUser) {
+        next(new NotFoundError("Нет пользователя с таким id"));
+      } else {
+        res.status(200).send(updateUser);
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "ValidationError") {
         next(new BadRequestError("Были предоставлены неверные данные"));
-      } else if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет пользователя с таким id"));
       } else {
         next(err);
       }
@@ -157,10 +171,6 @@ export const login = (
       res.status(200).send({ token });
     })
     .catch((err) => {
-      if (err instanceof Error && err.name === "ValidationError") {
-        next(new UnauthorizedError("Неверный логин или пароль"));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };

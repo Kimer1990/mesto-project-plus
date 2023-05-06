@@ -40,19 +40,23 @@ export const deleteCardById = (
   next: NextFunction,
 ): Promise<void | Response> => {
   const { cardId } = req.params;
-  return Card.findByIdAndDelete(cardId)
+  return Card.findById(cardId)
     .then((card) => {
-      if (card!.owner.toString() !== req.user!._id) {
-        next(new ForbiddenError("Чужие курточки нельзя удалить"));
+      if (!card) {
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else if (card.owner.toString() !== req.user!._id) {
+        next(new ForbiddenError("Чужие карточки нельзя удалить"));
       } else {
-        res.status(200).send({
-          message: "Карточка удалена",
+        Card.findByIdAndDelete(cardId).then(() => {
+          res.status(200).send({
+            message: "Карточка удалена",
+          });
         });
       }
     })
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет карточки с таким id"));
+        next(new BadRequestError("Передан невалидный id"));
       } else {
         next(err);
       }
@@ -69,12 +73,18 @@ export const likeCard = (
   return Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: id } },
-    { new: true, runValidators: true },
+    { new: true },
   )
-    .then((card) => res.status(200).send(card))
+    .then((card) => {
+      if (!card) {
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else {
+        res.status(200).send(card);
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет карточки с таким id"));
+        next(new BadRequestError("Передан невалидный id"));
       } else {
         next(err);
       }
@@ -88,15 +98,17 @@ export const dislikeCard = (
 ): Promise<void | Response> => {
   const id = req.user!._id as ObjectId;
   const { cardId } = req.params;
-  return Card.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: id } },
-    { new: true, runValidators: true },
-  )
-    .then((card) => res.status(200).send(card))
+  return Card.findByIdAndUpdate(cardId, { $pull: { likes: id } }, { new: true })
+    .then((card) => {
+      if (!card) {
+        next(new NotFoundError("Нет карточки с таким id"));
+      } else {
+        res.status(200).send(card);
+      }
+    })
     .catch((err) => {
       if (err instanceof Error && err.name === "CastError") {
-        next(new NotFoundError("Нет карточки с таким id"));
+        next(new BadRequestError("Передан невалидный id"));
       } else {
         next(err);
       }

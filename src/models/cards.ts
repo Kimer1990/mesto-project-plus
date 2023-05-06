@@ -9,10 +9,6 @@ const cardModel = new Schema<ICard>(
       required: true,
       minlength: 2,
       maxlength: 30,
-      validate: {
-        validator: (v: string) => v.length > 2 && v.length < 30,
-        message: "Название не должено быть короче 2 символов и длиннее 30.",
-      },
     },
     link: {
       type: String,
@@ -30,6 +26,7 @@ const cardModel = new Schema<ICard>(
     likes: [
       {
         type: Schema.Types.ObjectId,
+        ref: "user",
         default: [],
       },
     ],
