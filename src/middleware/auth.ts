@@ -10,6 +10,7 @@ interface ISessionRequest extends Request {
 const { JWT_SECRET = "none" } = process.env;
 const extractBearerToken = (token: string) => token.replace("Bearer ", "");
 
+// eslint-disable-next-line consistent-return
 export default (req: ISessionRequest, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -21,7 +22,7 @@ export default (req: ISessionRequest, res: Response, next: NextFunction) => {
     try {
       payload = jwt.verify(token, JWT_SECRET as string);
     } catch (err) {
-      next(new UnauthorizedError("Необходима авторизация"));
+      return next(new UnauthorizedError("Необходима авторизация"));
     }
 
     req.user = payload;

@@ -11,20 +11,12 @@ const userModel = new Schema<IUser, IUserModal>(
       minlength: 2,
       maxlength: 30,
       default: "Жак-Ив Кусто",
-      validate: {
-        validator: (v: string) => v.length > 2 && v.length < 200,
-        message: "Имя не должено быть короче 2 символов и длиннее 30.",
-      },
     },
     about: {
       type: String,
       minlength: 2,
       maxlength: 200,
       default: "Исследователь",
-      validate: {
-        validator: (v: string) => v.length > 2 && v.length < 200,
-        message: "Описание не должено быть короче 2 символов и длиннее 200.",
-      },
     },
     avatar: {
       type: String,
@@ -47,7 +39,6 @@ const userModel = new Schema<IUser, IUserModal>(
     password: {
       type: String,
       required: true,
-      minlength: 8,
       select: false,
     },
   },
